@@ -12,6 +12,7 @@ export default function App() {
       <Header />
       <Routes>
         <Route path="/" element={<Home />} />
+        <Route path="/frontend-challenge/" element={<Home />} />
         <Route path="/favorite-cats" element={<FavoriteCatsPage />} />
         <Route path="*" element={<NotFoundPage />} />
       </Routes>
