@@ -37,7 +37,7 @@ jobs:
       - name: Build
         run: npm run build
         env:
-          BASE_URL: /frontend-challenge/#
+          BASE_URL: /frontend-challenge
           DEPLOY_TARGET: github-pages 
           VITE_CAT_API_KEY: ${{ secrets.VITE_CAT_API_KEY }}
 
