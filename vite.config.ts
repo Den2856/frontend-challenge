@@ -6,5 +6,5 @@ const isGithubPages = process.env.DEPLOY_TARGET === "github-pages";
 
 export default defineConfig({
   plugins: [react(), tailwindcss()],
-  base: isGithubPages ? "/frontend-challenge/" : "/",
+  base: isGithubPages ? "/frontend-challenge/#" : "/",
 })
