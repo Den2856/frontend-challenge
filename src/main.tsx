@@ -7,7 +7,7 @@ import { FavoritesProvider } from './context/FavoritesContext.tsx'
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
-    <BrowserRouter>
+    <BrowserRouter basename="/frontend-challenge">
       <FavoritesProvider>
         <App />
       </FavoritesProvider>

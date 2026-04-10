@@ -12,6 +12,7 @@ const NAV_LINKS = [
 ];
 
 export default function Header() {
+
   return (
     <header className="header-shadow min-h-16 bg-blue-vk-500">
       <nav className="mx-auto max-w-360 px-15.5 max-md:px-12 max-sm:px-4">
