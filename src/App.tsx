@@ -15,6 +15,7 @@ export default function App() {
         <Route path="/frontend-challenge/" element={<Home />} />
         <Route path="/favorite-cats" element={<FavoriteCatsPage />} />
         <Route path="*" element={<NotFoundPage />} />
+        <Route path="/not-found" element={<NotFoundPage />} />
       </Routes>
     </>
   );
