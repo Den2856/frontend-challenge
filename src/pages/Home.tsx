@@ -9,15 +9,6 @@ export default function Home() {
 
   const { favoriteIds, toggleFavorite } = useFavoritesContext();
 
-  if (isFirstLoading) {
-    return (
-      <section className="mx-auto max-w-360 px-4 py-8">
-        <p className="text-center text-gray-500">Загружаем котиков...</p>
-      </section>
-    );
-  }
-
-
   return (
     <div className="min-h-screen bg-white">
       {errorMessage ? (
@@ -32,6 +23,8 @@ export default function Home() {
         cats={cats}
         favoriteIds={favoriteIds}
         onToggleFavorite={toggleFavorite}
+        isLoading={isFirstLoading}
+        skeletonCount={20}
       />
 
       {hasMore ? (

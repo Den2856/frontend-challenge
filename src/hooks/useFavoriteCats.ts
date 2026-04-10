@@ -3,7 +3,25 @@ import type { CatImage } from "../types/cat";
 
 const FAVORITES_STORAGE_KEY = "favorite-cats";
 
-function getStoredFavoriteCats(): CatImage[] {
+export type FavoriteCat = {
+  id: string;
+  url: string;
+};
+
+function isFavoriteCat(value: unknown): value is FavoriteCat {
+  if (typeof value !== "object" || value === null) {
+    return false;
+  }
+
+  const candidate = value as Record<string, unknown>;
+
+  return (
+    typeof candidate.id === "string" &&
+    typeof candidate.url === "string"
+  );
+}
+
+function getStoredFavoriteCats(): FavoriteCat[] {
   if (typeof window === "undefined") {
     return [];
   }
@@ -15,16 +33,29 @@ function getStoredFavoriteCats(): CatImage[] {
       return [];
     }
 
-    const parsedValue = JSON.parse(value) as CatImage[];
+    const parsedValue: unknown = JSON.parse(value);
 
-    return Array.isArray(parsedValue) ? parsedValue : [];
+    if (!Array.isArray(parsedValue)) {
+      return [];
+    }
+
+    return parsedValue.filter(isFavoriteCat);
   } catch {
     return [];
   }
 }
 
+function toFavoriteCat(cat: Pick<CatImage, "id" | "url">): FavoriteCat {
+  return {
+    id: cat.id,
+    url: cat.url,
+  };
+}
+
 export function useFavoriteCats() {
-  const [favoriteCats, setFavoriteCats] = useState<CatImage[]>(getStoredFavoriteCats);
+  const [favoriteCats, setFavoriteCats] = useState<FavoriteCat[]>(
+    getStoredFavoriteCats
+  );
 
   useEffect(() => {
     window.localStorage.setItem(
@@ -37,7 +68,7 @@ export function useFavoriteCats() {
     return new Set(favoriteCats.map((cat) => cat.id));
   }, [favoriteCats]);
 
-  const toggleFavorite = useCallback((cat: CatImage) => {
+  const toggleFavorite = useCallback((cat: Pick<CatImage, "id" | "url">) => {
     setFavoriteCats((previousFavoriteCats) => {
       const isAlreadyFavorite = previousFavoriteCats.some(
         (favoriteCat) => favoriteCat.id === cat.id
@@ -49,7 +80,7 @@ export function useFavoriteCats() {
         );
       }
 
-      return [cat, ...previousFavoriteCats];
+      return [toFavoriteCat(cat), ...previousFavoriteCats];
     });
   }, []);
 

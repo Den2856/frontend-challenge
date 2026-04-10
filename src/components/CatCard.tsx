@@ -1,49 +1,36 @@
-import { memo, useMemo, useState, type MouseEvent } from "react";
+import { memo, useState, type MouseEvent } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import type { CatImage } from "../types/cat";
+import HeartIcon from "./HeartIcon";
 
 type CatCardProps = {
-  cat: CatImage;
-  isFavorite: boolean;
-  onToggleFavorite: (cat: CatImage) => void;
+  cat?: CatImage;
+  isFavorite?: boolean;
+  onToggleFavorite?: (cat: CatImage) => void;
+  isLoading?: boolean;
 };
 
-function CatCardComponent({ cat, isFavorite, onToggleFavorite }: CatCardProps) {
+function CatCardComponent({ cat, isFavorite = false, onToggleFavorite, isLoading = false }: CatCardProps) {
 
   const [isCardHovered, setIsCardHovered] = useState(false);
   const [isCardFocused, setIsCardFocused] = useState(false);
   const [isHeartHovered, setIsHeartHovered] = useState(false);
-  const [isHeartFocused, setIsHeartFocused] = useState(false);
 
   const isCardActive = isCardHovered || isCardFocused;
-  const isHeartActive = isHeartHovered || isHeartFocused;
-  const showActionButton = isCardActive;
 
-  const iconSrc = useMemo(() => {
-    if (isFavorite) {
-      return { 
-        src: "/favorite-c.svg",
-      };
-    }
-
-    if (isHeartActive) {
-      return { 
-        src: "/favorite-h.svg",
-      };
-    }
-
-    return { 
-      src: "/favorite-b.svg",
-    };
-  }, [isFavorite, isHeartActive]);
+  const heartVariant = isFavorite
+    ? "filled"
+    : isHeartHovered
+      ? "hover"
+      : "base";
 
   const buttonLabel = isFavorite ? "Убрать котика из избранного" : "Добавить котика в избранное";
 
   const handleToggleFavorite = (event: MouseEvent<HTMLButtonElement>) => {
-    const isMouseClick = event.detail > 0;
+        
+    if (!cat || !onToggleFavorite) return;
 
-    setIsHeartHovered(false);
-    setIsHeartFocused(false);
+    const isMouseClick = event.detail > 0;
 
     onToggleFavorite(cat);
 
@@ -52,6 +39,27 @@ function CatCardComponent({ cat, isFavorite, onToggleFavorite }: CatCardProps) {
       setIsCardFocused(false);
     }
   };
+
+  if (isLoading) {
+    return (
+      <article className="relative aspect-square w-full overflow-hidden bg-slate-200">
+        <motion.div
+          aria-hidden="true"
+          className="absolute inset-0"
+          animate={{ x: ["-100%", "100%"] }}
+          transition={{ duration: 1.2, repeat: Infinity, ease: "linear", }}
+        >
+          <div className="h-full w-1/2 -skew-x-12 bg-linear-to-r from-transparent via-white/50 to-transparent" />
+        </motion.div>
+
+        <div className="absolute right-2 bottom-2 z-10 size-12 rounded-full bg-white/90 sm:right-3 sm:bottom-3" />
+      </article>
+    );
+  }
+  
+  if (!cat || !onToggleFavorite) {
+    return null;
+  }
 
   return (
     <motion.article
@@ -71,7 +79,7 @@ function CatCardComponent({ cat, isFavorite, onToggleFavorite }: CatCardProps) {
       />
 
       <AnimatePresence initial={false}>
-        {showActionButton ? (
+        {isCardActive ? (
           <motion.button
             key="favorite-button"
             type="button"
@@ -88,23 +96,11 @@ function CatCardComponent({ cat, isFavorite, onToggleFavorite }: CatCardProps) {
             className="cursor-pointer absolute right-2 bottom-2 z-10 flex size-12 bg-white rounded-full items-center justify-center outline-none sm:right-3 sm:bottom-3"
           >
             <motion.span
-              animate={{ scale: isHeartActive && !isFavorite ? 1.08 : 1 }}
+              animate={{ scale: isHeartHovered && !isFavorite ? 1.08 : 1 }}
               transition={{ duration: 0.16, ease: [0.22, 1, 0.36, 1] }}
               className="pointer-events-none relative block size-9"
             >
-              <AnimatePresence mode="sync" initial={false}>
-                <motion.img
-                  key={iconSrc.src}
-                  src={iconSrc.src}
-                  alt=""
-                  aria-hidden="true"
-                  initial={{ opacity: 0, scale: 0.82 }}
-                  animate={{ opacity: 1, scale: 1 }}
-                  exit={{ opacity: 0, scale: 0.88 }}
-                  transition={{ duration: 0.12, ease: [0.22, 1, 0.36, 1] }}
-                  className="absolute inset-0 h-full w-full select-none object-contain"
-                />
-              </AnimatePresence>
+              <HeartIcon variant={heartVariant} className="h-full w-full" />
             </motion.span>
           </motion.button>
         ) : null}

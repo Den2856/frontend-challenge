@@ -1,9 +1,11 @@
 import CatsGrid from "../components/CatsGrid";
 import { useFavoritesContext } from "../context/FavoritesContext";
+import { useInfiniteCats } from "../hooks/useInfiniteCats";
 
 export default function FavoriteCatsPage() {
 
-  const { favoriteCats, favoriteIds, toggleFavorite } = useFavoritesContext();
+  const { favoriteCats, favoriteIds, toggleFavorite,  } = useFavoritesContext();
+  const { isFirstLoading } = useInfiniteCats();
 
   if (favoriteCats.length === 0) {
     return (
@@ -21,6 +23,8 @@ export default function FavoriteCatsPage() {
         cats={favoriteCats}
         favoriteIds={favoriteIds}
         onToggleFavorite={toggleFavorite}
+        isLoading={isFirstLoading}
+        skeletonCount={favoriteCats.length}
       />
     </div>
 
